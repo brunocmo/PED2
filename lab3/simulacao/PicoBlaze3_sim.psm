@@ -1,0 +1,135 @@
+quinzeaoito DSIN 00
+seteazero DSIN 02
+seletor DSIN 04
+
+saida16 DSOUT 08
+saida8 DSOUT 10
+
+     LOAD s9, $FF                       ; Carrega 255 no iterador
+
+start:
+	 IN	s0,quinzeaoito                  ; Entrada do valor do vetor de 15 a 8
+	 IN s1, seteazero                   ; Entrada do valor do vetor de 7 a 0
+
+     LOAD s2, s0                        ; Carrega o valor de s0 em s2
+     LOAD s3, s1                        ; Carrega o valor de s1 em s3
+     
+   	 OUT s2, saida16                   ; Saida do valor do vetor de 15 a 8
+	 OUT s3, saida8                    ; Saida do valor do vetor de 7 a 0
+	
+	 IN s6, seletor                    ; Entrada do seletor
+	
+	 SUB s9, 01                        ; Subtrai o valor 1 do iterador
+	 JUMP NZ, start                    ; Se não for zero volta a o start
+
+	 LOAD s7, s6                       ; Carrega o valor de s6 em s7
+     
+loop:
+	
+	 
+	 call definirtempo
+
+	 call desloc
+
+	 OUT s2, saida16                   ; Saida do valor do vetor de 15 a 8
+	 OUT s3, saida8                    ; Saida do valor do vetor de 7 a 0
+	 
+	 JUMP loop
+
+definirtempo:
+
+; Caso o valor de s6 corresponda com os casos definidos
+; ele conta os segundos selecionados
+; Selecao 01 vai contar meio segundo
+; Selecao 10 vai contar 1 segundo
+; Selecao 11 vai contar 2 segundos
+; Selecao 100 vai contar 4 segundos
+
+caso_meiosegundo:
+			 xor s6, 01                 ; Comparação de s6 com 01
+			 jump nz, caso_1segundo
+			 jump loadmeios
+caso_1segundo:
+			 LOAD s6, s7                ; Carrega o valor de s7 em s6
+			 xor s6, 02                 ; Comparação de s6 com 02
+			 jump nz, caso_2segundos
+			 jump load1s			
+
+caso_2segundos:
+			 LOAD s6, s7                ; Carrega o valor de s7 em s6
+			 xor s6, 03                 ; Comparação de s6 com 03
+			 jump nz, caso_4segundos
+			 jump load2s	
+caso_4segundos:
+			 LOAD s6, s7		        ; Carrega o valor de s7 em s6
+			 xor s6, 04                 ; Comparação de s6 com 03
+			 jump nz, caso_padrao
+			 jump load4s
+
+caso_padrao:
+             jump load1s
+
+caso_feito:
+			 ret
+	
+desloc:
+	 sr0 s2                      ; Desloca para direita o valor de s2
+	 sra s3                      ; Desloca para direita o valor de s3 com carry
+	 ret
+
+; Temporizadores no LOAD com suas devidas iteracoes definias
+; Tera a subtracao de cada um dos regitrador ate chegar em zero
+; Dependendo do tempo selecionado, chengado em zero ele cumpre o deslocamento
+; e carrega na saida os valores.
+
+loadmeios:
+		LOAD sa, $FF    ; 255
+		LOAD sb, $FF    ; 255
+		LOAD sc, $5F    ; 95
+delaymeios:
+		SUB sa, 1
+		SUBC sb, 0
+		SUBC sc, 0
+		JUMP NZ, delaymeios
+	 	JUMP caso_feito
+
+load1s:
+		LOAD sa, $FF   ; 255
+		LOAD sb, $FF   ; 255
+		LOAD sc, $BE   ; 190
+
+delay1s:
+		SUB sa, 1
+		SUBC sb, 0
+		SUBC sc, 0
+		JUMP NZ, delay1s
+	 	JUMP caso_feito
+
+load2s:
+		LOAD sa, $FF   ; 255
+		LOAD sb, $FF   ; 255
+		LOAD sc, $FF   ; 255
+		LOAD sd, $01   ; 1
+
+delay2s:
+		SUB sa, 1
+		SUBC sb, 0
+		SUBC sc, 0
+		SUBC sd, 0
+		JUMP NZ, delay2s
+	 	JUMP caso_feito
+
+load4s:
+		LOAD sa, $FF   ; 255
+		LOAD sb, $FF   ; 255
+		LOAD sc, $FF   ; 255
+		LOAD sd, $02   ; 2
+
+delay4s:
+		SUB sa, 1
+		SUBC sb, 0
+		SUBC sc, 0
+		SUBC sd, 0
+		JUMP NZ, delay4s
+	 	JUMP caso_feito
+

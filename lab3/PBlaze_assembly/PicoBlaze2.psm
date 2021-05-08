@@ -1,0 +1,29 @@
+NAMEREG s1, i
+CONSTANT entrada, 01
+CONSTANT valorA, 02
+CONSTANT MSprod, 03
+CONSTANT LSprod DSOUT 04
+
+forever:
+			 INPUT s3, entrada
+			 INPUT s4, valorA
+			 call mult_soft
+			 OUTPUT s5, MSprod
+			 OUTPUT s6, LSprod
+			 jump forever
+			
+mult_soft:
+		   	 load s5, 00
+			 load i, 08
+
+mult_loop:
+		  	 sr0 s4
+		  	 jump nc, shift_prod
+		  	 add s5,s3
+		  	
+shift_prod:
+		  	 sra s5
+		  	 sra s6
+		  	 sub i, 01
+		  	 jump nz, mult_loop
+		  	 RETURN

@@ -1,0 +1,125 @@
+CONSTANT quinzeaoito, 01
+CONSTANT seteazero, 02
+CONSTANT seletor, 04
+
+CONSTANT saida16, 08
+CONSTANT saida8, 10
+
+	LOAD s9, FF
+
+
+start:
+
+	 INPUT s0,quinzeaoito	 
+	 INPUT s1, seteazero
+
+     LOAD s2, s0 ; quinzeaoito
+     LOAD s3, s1 ; seteazero
+	 
+	 OUTPUT s2, saida16;
+	 OUTPUT s3, saida8;
+	 
+	 INPUT s6, seletor
+	 
+	 SUB s9, 01
+	 JUMP NZ, start
+	 
+	 	 
+	 LOAD s7, s6
+
+loop:
+
+	 
+	 call definirtempo
+
+	 call desloc
+
+	 OUTPUT s2, saida16
+	 OUTPUT s3, saida8
+	 
+	 JUMP loop
+
+definirtempo:
+
+caso_meiosegundo:
+			 xor s6, 01
+			 jump nz, caso_1segundo
+			 jump loadmeios
+caso_1segundo:
+			 LOAD s6, s7
+			 xor s6, 02
+			 jump nz, caso_2segundos
+			 jump load1s			
+
+caso_2segundos:
+			 LOAD s6, s7
+			 xor s6, 03
+			 jump nz, caso_4segundos
+			 jump load2s	
+caso_4segundos:
+			 LOAD s6, s7		
+			 xor s6, 04
+			 jump nz, caso_padrao
+			 jump load4s
+
+caso_padrao:
+             jump load1s
+
+caso_feito:
+			 RETURN
+	
+desloc:
+	 sr0 s2
+	 sra s3
+	 RETURN
+
+loadmeios:
+		LOAD sa, FF
+		LOAD sb, FF
+		LOAD sc, 5F
+delaymeios:
+		SUB sa, 01
+		SUBCY sb, 00
+		SUBCY sc, 00
+		JUMP NZ, delaymeios
+	 	JUMP caso_feito
+
+load1s:
+		LOAD sa, FF
+		LOAD sb, FF
+		LOAD sc, BE
+
+delay1s:
+		SUB sa, 01
+		SUBCY sb, 00
+		SUBCY sc, 00
+		JUMP NZ, delay1s
+	 	JUMP caso_feito
+
+load2s:
+		LOAD sa, FF
+		LOAD sb, FF
+		LOAD sc, FF
+		LOAD sd, 01
+
+delay2s:
+		SUB sa, 01
+		SUBCY sb, 00
+		SUBCY sc, 00
+		SUBCY sd, 00
+		JUMP NZ, delay2s
+	 	JUMP caso_feito
+
+load4s:
+		LOAD sa, FF
+		LOAD sb, FF
+		LOAD sc, FF
+		LOAD sd, 02
+
+delay4s:
+		SUB sa, 01
+		SUBCY sb, 00
+		SUBCY sc, 00
+		SUBCY sd, 00
+		JUMP NZ, delay4s
+	 	JUMP caso_feito

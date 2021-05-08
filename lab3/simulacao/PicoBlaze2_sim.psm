@@ -1,0 +1,29 @@
+i EQU s1
+entrada DSIN 01
+valorA DSIN 02
+MSprod DSOUT 03
+LSprod DSOUT 04
+
+forever:
+			 IN s3, entrada  ; Entrada pra a saida do primeiro picoblaze
+			 IN s4, valorA   ; Multiplicador com valor de 8 bits em A
+			 call mult_soft
+			 OUT s5, MSprod  ; Saida Maior produto
+			 OUT s6, LSprod  ; Saida Menor produto
+			 jump forever
+			
+mult_soft:
+		   	 load s5, 00     ; Zera o registrador s5
+			 load i, 08      ; Carrega valor 8 no iterador
+
+mult_loop:
+		  	 sr0 s4                ; Desloca para direita em s4
+		  	 jump nc, shift_prod   ; Se não tem carry pula para shift_prod
+		  	 add s5,s3             ; Adiciona s5 = s5 + s3
+		  	
+shift_prod:
+		  	 sra s5                ; Desloca com carry em s5
+		  	 sra s6                ; Desloca com carry em s6
+		  	 sub i, 01             ; Subtrai o valor 1 do iterador
+		  	 jump nz, mult_loop    ; Se não for zero pula para mult_loop
+		  	 ret

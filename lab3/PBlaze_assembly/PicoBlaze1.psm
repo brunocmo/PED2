@@ -1,0 +1,15 @@
+CONSTANT entradaMaior, 01
+CONSTANT entradaMenor, 02
+CONSTANT saidaPB1, 03
+
+loop:
+	 INPUT s3, entradaMaior
+	 INPUT	s4, entradaMenor
+	 call subtrac
+	 OUTPUT s3, saidaPB1
+	 JUMP loop
+	 
+subtrac:
+	 SUB s3, s4
+	 RETURN
+		

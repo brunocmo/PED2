@@ -1,0 +1,15 @@
+entradaMaior DSIN 01
+entradaMenor DSIN 02
+saidaPB1 DSOUT 03
+
+loop:
+	 IN s3, entradaMaior ; Input entrada maior
+	 IN	s4, entradaMenor ; Input entrada menor
+	 call subtrac
+	 OUT s3, saidaPB1   ; Saida do valor
+	 JUMP loop
+	 
+subtrac:
+	 SUB s3, s4 ;  Subtracao s3 = s3 - s4
+	 RET
+		
